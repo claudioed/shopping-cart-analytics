@@ -134,7 +134,7 @@
         <configuration>
           <resources>
             <env>
-              <REDIS_HOST>redis-master</REDIS_HOST>
+              <MONGO_HOST>mongodb</MONGO_HOST>
             </env>
             <labels>
               <deployment>
