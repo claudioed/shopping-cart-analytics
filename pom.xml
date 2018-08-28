@@ -134,7 +134,7 @@
         <configuration>
           <resources>
             <env>
-              <MONGO_HOST>mongodb</MONGO_HOST>
+              <MONGO_HOST>mongodb://mongodb:27017</MONGO_HOST>
             </env>
             <labels>
               <deployment>
@@ -179,7 +179,7 @@
                   <tag>${project.version}</tag>
                 </tags>
                 <ports>
-                  <port>8080</port>
+                  <port>8081</port>
                 </ports>
               </build>
               <run>
