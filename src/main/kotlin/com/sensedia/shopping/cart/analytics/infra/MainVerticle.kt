@@ -8,6 +8,7 @@ import io.vertx.core.Handler
 import io.vertx.core.http.HttpServerRequest
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.Json
+import io.vertx.core.logging.LoggerFactory
 import io.vertx.ext.healthchecks.HealthCheckHandler
 import io.vertx.ext.healthchecks.HealthChecks
 import io.vertx.ext.healthchecks.Status
@@ -27,6 +28,8 @@ import java.util.*
  * Project shopping-cart
  */
 class MainVerticle : AbstractVerticle() {
+
+    private val LOGGER = LoggerFactory.getLogger(MainVerticle::class.java)
 
     override fun start(startFuture: Future<Void>) {
         Json.mapper.registerModule(KotlinModule())
@@ -56,10 +59,9 @@ class MainVerticle : AbstractVerticle() {
         val mongoClient = MongoClient.createShared(vertx, config, "ShoppingCartAnalyticsData")
         healthCheckHandler.register("mongodb"
         ) { future ->
-
             mongoClient.getCollections {
-
                 if(it.failed()){
+                    LOGGER.error(it.cause().message)
                     future.fail("database connection failed")
                 }else{
                     future.complete(Status.OK())
