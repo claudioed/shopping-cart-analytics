@@ -78,19 +78,22 @@ class MainVerticle : AbstractVerticle() {
         val cart = Json.decodeValue(req.bodyAsString, ShoppingCart::class.java)
         val shoppingCart = cart.copy(id = UUID.randomUUID().toString())
         vertx.eventBus().publish("shopping.cart.analytics.new", Json.encode(shoppingCart),DeliveryOptions(headers = traceHeaders(req.request())))
-        req.response().accepted()
+        req.response().accepted().end()
     }
 
     private fun traceHeaders(req: HttpServerRequest): Map<String, String> {
-        if(!req.headers().contains("x-request-id")){
-            return mapOf()
+        if(req.headers().contains("x-request-id")){
+            LOGGER.info("OpenTracing headers are fully configured")
+            return listOf("x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled","x-b3-flags", "x-ot-span-context")
+                    .filter { req.getHeader(it) != null }
+                    .map { it to req.getHeader(it)}.toMap()
         }
-        return listOf("x-request-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-parentspanid", "x-b3-flags", "x-ot-span-context")
-                .map { it to req.getHeader(it) }.toMap()
+        return mapOf()
     }
 
-    private fun HttpServerResponse.accepted() {
+    private fun HttpServerResponse.accepted():HttpServerResponse {
         this.statusCode = 202
+        return this
     }
 
 }
